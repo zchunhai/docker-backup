@@ -17,11 +17,14 @@ backup_image ()
     image_partials=($(echo $image | tr ":" "\n"))
     image_dir=$base_dir$(dirname "${image_partials[0]}")
     image_name=$(basename "${image_partials[0]}")
+    dest_file=$image_dir/${image_name}_${image_partials[1]}
     mkdir -p $image_dir
 
-    set -o xtrace
-    docker save -o $image_dir/${image_name}_${image_partials[1]} $image
-    set +o xtrace
+    if [ ! -f $dest_file ]; then
+        set -o xtrace
+        docker save -o $dest_file $image
+        set +o xtrace
+    fi
 }
 
 for image in `docker images --format {{.Repository}}:{{.Tag}}`
